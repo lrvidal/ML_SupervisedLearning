@@ -7,17 +7,6 @@ class LogisticRegression:
         self.data = FileParser(filename).data
         self.eta = eta
         self.iteration = iterations
-        self.max_val = None
-        self.min_val = None
-
-    def normalize(self, X, min_val=None, max_val=None):
-        if min_val is None or max_val is None:
-            min_val = np.min(X, axis=0)
-            max_val = np.max(X, axis=0)
-            self.min_val = min_val
-            self.max_val = max_val
-        # Add a small constant to the denominator to avoid division by zero
-        return (X - min_val) / (max_val - min_val + 1e-7)
 
     def sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
@@ -27,7 +16,7 @@ class LogisticRegression:
         y = np.array(y)
 
         # Normalize X
-        X = self.normalize(X)
+        X = utils.normalize(X)
 
         self.weights = np.zeros(X.shape[1] + 1)
         X = np.insert(X, 0, 1, axis=1)
@@ -42,7 +31,7 @@ class LogisticRegression:
         X = np.array(X)
 
         # Normalize X
-        X = self.normalize(X, self.min_val, self.max_val)
+        X = utils.normalize(X, self.min_val, self.max_val)
 
         X = np.insert(X, 0, 1)
         return self.sigmoid(np.dot(X, self.weights)) >= 0.5
