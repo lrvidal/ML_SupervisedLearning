@@ -16,7 +16,7 @@ class LogisticRegression:
         y = np.array(y)
 
         # Normalize X
-        X = utils.normalize(X)
+        X = utils.normalize(X) #
 
         self.weights = np.zeros(X.shape[1] + 1)
         X = np.insert(X, 0, 1, axis=1)
