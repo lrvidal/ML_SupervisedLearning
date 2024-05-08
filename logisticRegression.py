@@ -7,6 +7,9 @@ class LogisticRegression:
         self.data = FileParser(filename).data
         self.eta = eta
         self.iteration = iterations
+        self.weights = None
+        self.min_val = None
+        self.max_val = None
 
     def sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
@@ -47,5 +50,4 @@ for item in testSet:
     if pred == item[-1]:
         rightPredictions += 1
 
-print(f'Accuracy: {rightPredictions / len(testSet) * 100:.2f}%')
-print(f'MSE: {utils.meanSquaredError(y_true=[item[-1] for item in testSet], y_pred=[m.predict(item[:-1]) for item in testSet])}')
+print(f'Accuracy of Logistic Regression: {rightPredictions / len(testSet) * 100:.2f}%')
