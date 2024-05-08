@@ -12,21 +12,16 @@ class RandomForest:
 
     def fit(self, data):
         for _ in range(self.number_trees):
-            # Create a bootstrap sample of the data
             sample = [random.choice(data) for _ in range(len(data))]
 
-            # Create a decision tree and fit it to the bootstrap sample
             tree = DecisionTrees()
             tree.fit(sample)
 
-            # Add the tree to the forest
             self.forest.append(tree)
 
     def predict(self, input_data):
-        # Make a prediction with each tree
         predictions = [tree.predict(input_data) for tree in self.forest]
 
-        # Take the majority vote of the predictions
         majority_vote = [max(set(preds), key=preds.count) for preds in zip(*predictions)]
 
         return majority_vote
