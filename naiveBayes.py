@@ -70,7 +70,7 @@ print(f'Accuracy: {rightPredictions / len(testData) * 100:.2f}%')
 
 
 ######################
-
+#test1
 
 #fuck it Pi graph
 values = [probSpam, probHam] 
