@@ -14,7 +14,27 @@ class naiveBayes:
         X = np.array(X)
         y = np.array(y)
         X = utils.normalize(X)
-
+    
+    #TODO test predict
+    def predict(self, X):
+        X = np.array(X)
+        X = utils.normalize(X)
+        predictions = []
+    
+        for item in X:
+            probSpam = 1
+            probHam = 1
+            for i in range(len(item)):
+                probSpam *= probSpamList[i] if item[i] == 1 else (1 - probSpamList[i])
+                probHam *= probHamList[i] if item[i] == 1 else (1 - probHamList[i])
+            probSpam *= probSpam
+            probHam *= probHam
+            if probSpam > probHam:
+                predictions.append(1)
+            else:
+                predictions.append(0)
+        return predictions
+    
 print("Naive Bayes Time :3\n")
 
 #for some fucking reason OG file wouldnt work, made copy
@@ -60,17 +80,14 @@ print("\nReal:{}  Spam:{} ProbHam: {:0.2f}% ProbSpam: {:0.2f}%".format(numHam,nu
 
 #################
 rightPredictions= 0
-#for item in testData:
-    #pred = model.predict(item[:-1])
-    #if pred == item[-1]:
-    #    rightPredictions += 1
+for item in testData:
+    pred = model.predict(item[:-1])
+    if pred == item[-1]:
+        rightPredictions += 1
 
 print(f'Accuracy: {rightPredictions / len(testData) * 100:.2f}%')
 #print(f'MSE: {utils.meanSquaredError(y_true=[item[-1] for item in testData], y_pred=[model.predict(item[:-1]) for item in testData])}')
 
-
-######################
-#test1
 
 #fuck it Pi graph
 values = [probSpam, probHam] 
