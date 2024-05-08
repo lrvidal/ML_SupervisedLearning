@@ -1,4 +1,4 @@
-from decisionTrees import DecisionTrees
+from DecisionTrees import DecisionTrees
 from FileParser import FileParser
 import Utils as utils
 
