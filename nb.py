@@ -3,6 +3,9 @@ import Utils as utils
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+##NAIVE BAYES using the class, incorrect accuracy.##
+
 class naiveBayes:
     def __init__(self, file, eta, iterations):
         self.data = FileParser(file).data
@@ -31,24 +34,25 @@ class naiveBayes:
                     'mean': np.mean(X_label),
                     'std': np.std(X_label)
                 }
+
     def predict(self, X):
         X = np.array(X)
-        if len(X.shape) == 1:
-            # X is a 1D array, reshape it to a 2D array with one row
-            X = X.reshape(1, -1)
         X = utils.normalize(X)
-       
+        if len(X.shape) == 1:
+            X = X.reshape(1, -1)
+
         predictions = []
         
         for i in range(X.shape[0]):
             probabilities = {}
             for label in self.class_probs:
-                probabilities[label] = self.class_probs[label]
+                probabilities[label] = np.log(self.class_probs[label])
                 for feature in range(X.shape[1]):
                     mean = self.feature_probs[feature][label]['mean']
-                    std = self.feature_probs[feature][label]['std']
+                    std = self.feature_probs[feature][label]['std'] + 1e-9
                     x = X[i][feature]
-                    #probabilities[label] *= (1 / (np.sqrt(2 * np.pi) * std)) * np.exp(-((x - mean) ** 2) / (2 * std ** 2))
+                    exponent = -((x - mean) ** 2) / (2 * std ** 2)
+                    probabilities[label] += np.log(1 / (np.sqrt(2 * np.pi) * std)) + exponent
             predicted_label = max(probabilities, key=probabilities.get)
             predictions.append(predicted_label)
         return predictions
@@ -65,12 +69,16 @@ for item in trainData:
     if item[-1] == 1:
         numSpam += 1
 
+total = numHam + numSpam
+model.class_probs = {0: numHam / total, 1: numSpam / total}
+
 ########## TESTING ##########
 rightPredictions = 0
 for item in testData:
-    pred = model.predict(item[:-1])
-    if pred == item[-1]:
+    pred = model.predict([item[:-1]])
+    if pred[0] == item[-1]:
         rightPredictions += 1
 #############################
 
 print(f'Accuracy: {rightPredictions / len(testData) * 100:.2f}%')
+#print(f'MSE: {utils.meanSquaredError(y_true=[item[-1] for item in testData], y_pred=[model.predict(item[:-1]) for item in testData])}')

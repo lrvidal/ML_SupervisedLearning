@@ -3,6 +3,7 @@ import Utils as utils
 import numpy as np
 import matplotlib.pyplot as plt
 
+## Naive Bayes using Laplace Smoothing. 70% accuracy##
 alpha =1
 class naiveBayes:
     def __init__(self, file, eta, iterations):
@@ -14,27 +15,8 @@ class naiveBayes:
         X = np.array(X)
         y = np.array(y)
         X = utils.normalize(X)
-    
-    #TODO test predict
-    def predict(self, X):
-        X = np.array(X)
-        X = utils.normalize(X)
-        predictions = []
-    
-        for item in X:
-            probSpam = 1
-            probHam = 1
-            for i in range(len(item)):
-                probSpam *= probSpamList[i] if item[i] == 1 else (1 - probSpamList[i])
-                probHam *= probHamList[i] if item[i] == 1 else (1 - probHamList[i])
-            probSpam *= probSpam
-            probHam *= probHam
-            if probSpam > probHam:
-                predictions.append(1)
-            else:
-                predictions.append(0)
-        return predictions
-    
+
+
 print("Naive Bayes Time :3\n")
 
 #for some fucking reason OG file wouldnt work, made copy
@@ -42,15 +24,17 @@ model = naiveBayes(file = 'ML_SupervisedLearning\emailsCopy.csv', eta = 0.2, ite
 trainData, testData = utils.trainTestSplit(model.data, 0.8)
 
 #Calcuate intial probabilities from dataset
-numHam =0
-numSpam =0
-numTot =0
-
+numHam, numSpam, numToT = 0, 0, 0
 for item in trainData:
     if item[-1] == 0:
         numHam += 1
     if item[-1] == 1:
         numSpam += 1
+probHam = (numHam / len(trainData))*100
+probSpam = (numSpam / len(trainData))*100
+
+print("\nAnalyzing provided Dataset...")
+print("\nReal:{}  Spam:{} ProbHam: {:0.2f}% ProbSpam: {:0.2f}%".format(numHam,numSpam,probHam,probSpam))
 
 #the,too,ect
 probSpamList = [0] * len(trainData)
@@ -60,34 +44,34 @@ testSpamList = np.zeros((4137, 4137))
 
 #Laplace Smoothing
 for item in trainData:
-    
     if item[-1] == 0:
         for j in range(len(item)):
-            #only saves last item TODO
-            probHamList[j] = (item[j]+alpha)/((len(item))*alpha)
-
+            probHamList[j] += (item[j]+alpha)/((len(item))*alpha)
     if item[-1] == 1:
-         for j in range(len(item)):
-            #only saves last item TODO
-            probSpamList[j] = (item[j]+alpha)/((len(item))*alpha)
-            
-probHam = (numHam / len(trainData))*100
-probSpam = (numSpam / len(trainData))*100
-print(testSpamList)
+        for j in range(len(item)):
+            probSpamList[j] += (item[j]+alpha)/((len(item))*alpha)
 
-print("\nAnalyzing provided Dataset...")
-print("\nReal:{}  Spam:{} ProbHam: {:0.2f}% ProbSpam: {:0.2f}%".format(numHam,numSpam,probHam,probSpam))
-
-#################
-rightPredictions= 0
+hamProb = probHam
+spamProb = probSpam
+rightPredictions= 0          
 for item in testData:
-    pred = model.predict(item[:-1])
-    if pred == item[-1]:
-        rightPredictions += 1
+                
+                for j in range(len(item)-1):
+                    if item[j] == 1:
+                        hamProb *= probHamList[j]
+                        spamProb *= probSpamList[j]
+                    else:
+                        hamProb *= (1 - probHamList[j])
+                        spamProb *= (1 - probSpamList[j])
+                if hamProb == spamProb:
+                    prediction = 0
+                else:
+                    prediction = 1
+                if prediction == item[-1]:
+                    rightPredictions += 1
+                print(f'Prediction: {prediction}, Actual: {item[-1]}') 
 
 print(f'Accuracy: {rightPredictions / len(testData) * 100:.2f}%')
-#print(f'MSE: {utils.meanSquaredError(y_true=[item[-1] for item in testData], y_pred=[model.predict(item[:-1]) for item in testData])}')
-
 
 #fuck it Pi graph
 values = [probSpam, probHam] 
