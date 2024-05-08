@@ -26,3 +26,18 @@ def normalize(X, min_val=None, max_val=None):
 
 def meanSquaredError(y_true, y_pred):
     return sum((yt - yp) ** 2 for yt, yp in zip(y_true, y_pred)) / len(y_true)
+
+def confusionMatrixGen(y_true, y_pred):
+    confusion = [[0, 0], [0, 0]] ## [[TP, FP], [FN, TN]]
+
+    for yt, yp in zip(y_true, y_pred):
+        if yt == 1 and yp == 1:
+            confusion[0][0] += 1
+        elif yt == 1 and yp == 0:
+            confusion[1][0] += 1
+        elif yt == 0 and yp == 1:
+            confusion[0][1] += 1
+        else:
+            confusion[1][1] += 1
+
+    return confusion
