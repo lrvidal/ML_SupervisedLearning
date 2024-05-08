@@ -16,7 +16,6 @@ class naiveBayes:
         y = np.array(y)
         X = utils.normalize(X)
 
-
 print("Naive Bayes Time :3\n")
 
 #for some fucking reason OG file wouldnt work, made copy
@@ -40,8 +39,6 @@ print("\nReal:{}  Spam:{} ProbHam: {:0.2f}% ProbSpam: {:0.2f}%".format(numHam,nu
 probSpamList = [0] * len(trainData)
 probHamList = [0] * len(trainData)
 
-testSpamList = np.zeros((4137, 4137))
-
 #Laplace Smoothing
 for item in trainData:
     if item[-1] == 0:
@@ -51,34 +48,36 @@ for item in trainData:
         for j in range(len(item)):
             probSpamList[j] += (item[j]+alpha)/((len(item))*alpha)
 
-hamProb = probHam
-spamProb = probSpam
-rightPredictions= 0          
+
+rightPredictions= 0    
+#perform Naive Bayes learning and prediction      
 for item in testData:
-                
+                hamProb = probHam
+                spamProb = probSpam
                 for j in range(len(item)-1):
                     if item[j] == 1:
                         hamProb *= probHamList[j]
                         spamProb *= probSpamList[j]
                     else:
-                        hamProb *= (1 - probHamList[j])
-                        spamProb *= (1 - probSpamList[j])
+                        hamProb *= 1 - probHamList[j]
+                        spamProb *= 1 - probSpamList[j]
                 if hamProb == spamProb:
                     prediction = 0
                 else:
                     prediction = 1
+
                 if prediction == item[-1]:
                     rightPredictions += 1
-                print(f'Prediction: {prediction}, Actual: {item[-1]}') 
-
+#print accuracy
 print(f'Accuracy: {rightPredictions / len(testData) * 100:.2f}%')
 
 #fuck it Pi graph
-values = [probSpam, probHam] 
-labels = ['"Spam"', '"Ham"']
+values = [rightPredictions / len(testData) * 100, 100-rightPredictions / len(testData) * 100] 
+labels = ['"Spam Predictions"', '"Ham Predictions"']
 
 plt.pie(values, labels=labels, startangle=90, autopct='%1.1f%%')
 
-plt.title('Initial Dataset Assessment')
+plt.title('Naive Bayes Accuracy')
 plt.axis('equal')
 plt.show()
+

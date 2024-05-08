@@ -1,6 +1,7 @@
 from FileParser import FileParser
 import Utils as utils
 import numpy as np
+import matplotlib.pyplot as plt
 
 class LogisticRegression:
     def __init__(self, filename, eta=0.2, iterations=1000):
@@ -40,7 +41,7 @@ class LogisticRegression:
         return self.sigmoid(np.dot(X, self.weights)) >= 0.5
     
 
-m = LogisticRegression(filename='emails.csv', eta=0.3, iterations=1000)
+m = LogisticRegression(filename='ML_SupervisedLearning\emailsCopy.csv', eta=0.3, iterations=1000)
 trainSet, testSet = utils.trainTestSplit(m.data, 0.7)
 m.fit([item[:-1] for item in trainSet], [item[-1] for item in trainSet])
 
@@ -51,3 +52,12 @@ for item in testSet:
         rightPredictions += 1
 
 print(f'Accuracy of Logistic Regression: {rightPredictions / len(testSet) * 100:.2f}%')
+
+values = [rightPredictions / len(testSet) * 100, 100-rightPredictions / len(testSet) * 100] 
+labels = ['"Spam Predictions"', '"Ham Predictions"']
+
+plt.pie(values, labels=labels, startangle=90, autopct='%1.1f%%')
+
+plt.title('Logistic Regression Accuracy')
+plt.axis('equal')
+plt.show()
