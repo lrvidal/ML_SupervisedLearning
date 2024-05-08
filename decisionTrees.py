@@ -4,8 +4,7 @@ import numpy as np
 import math
 
 class DecisionTrees:
-    def __init__(self, filename):
-        self.data = FileParser(filename).data
+    def __init__(self):
         self.tree = None
 
     def fit(self, data):
@@ -105,20 +104,3 @@ class DecisionTrees:
             return self.traverse_tree(data, right_subtree)
 
 
-
-
-m = DecisionTrees(filename='emails.csv')
-trainSet, testSet = utils.trainTestSplit(m.data, 0.7)
-m.fit(trainSet)
-
-rightPredictions = 0
-testVals = [item[:-1] for item in testSet] 
-testLabels = [item[-1] for item in testSet]  
-pred = m.predict(testVals)
-
-
-for i in range(len(testLabels)):
-    if pred[i] == testLabels[i]:
-        rightPredictions += 1
-
-print(f'Accuracy: {rightPredictions / len(testSet) * 100:.2f}%')
